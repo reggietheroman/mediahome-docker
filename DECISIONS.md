@@ -13,6 +13,9 @@ This document outlines the final locked-down architecture and component stack fo
 * **Radarr**: Dedicated media automation manager for movies. Works in tandem with Sonarr to handle movie discovery, downloading, and library organization.
 * **Bazarr**: Companion automation tool that integrates directly with Sonarr and Radarr to automatically fetch, score, and sync subtitles in preferred languages.
 
-## 3. Observability & Management
+## 3. Request Management
+* **Seerr** (formerly Jellyseerr): Jellyfin-integrated request portal for household users. Browses and requests movies and TV; approved requests are sent to Radarr and Sonarr. No media volume mounts—only app config—kept lightweight for the low-power host.
+
+## 4. Observability & Management
 * **Beszel**: A lightweight, modern monitoring hub designed for homelabs. Tracks CPU, memory, disk, network usage, and individual Docker container performance metrics with minimal RAM overhead.
 * **Dozzle**: A lightweight, real-time web-based log viewer that connects directly to the Docker socket, enabling quick debugging and log monitoring across all homelab containers.
