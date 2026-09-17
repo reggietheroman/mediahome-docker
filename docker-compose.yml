@@ -1,0 +1,103 @@
+services:
+  # ==========================================
+  # DOWNLOAD CLIENT
+  # ==========================================
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent:latest
+    container_name: qbittorrent
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+      - WEBUI_PORT=8080
+    volumes:
+      - ./config/qbittorrent:/config
+      - ${MEDIAHOME_DRIVE_DOWNLOADS:-/mnt/external-drive/downloads}:/downloads
+    ports:
+      - 8080:8080
+      - 6881:6881
+      - 6881:6881/udp
+    restart: unless-stopped
+
+  # ==========================================
+  # MEDIA SERVER
+  # ==========================================
+  jellyfin:
+    image: lscr.io/linuxserver/jellyfin:latest
+    container_name: jellyfin
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+    volumes:
+      - ./config/jellyfin:/config
+      - ${MEDIAHOME_DRIVE_MEDIA:-/mnt/external-drive/media}:/data/media
+    ports:
+      - 8096:8096
+    restart: unless-stopped
+
+  # ==========================================
+  # MEDIA AUTOMATION (ARR STACK)
+  # ==========================================
+  sonarr:
+    image: lscr.io/linuxserver/sonarr:latest
+    container_name: sonarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+    volumes:
+      - ./config/sonarr:/config
+      - ${MEDIAHOME_DRIVE:-/mnt/external-drive}:/data
+    ports:
+      - 8989:8989
+    restart: unless-stopped
+
+  radarr:
+    image: lscr.io/linuxserver/radarr:latest
+    container_name: radarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+    volumes:
+      - ./config/radarr:/config
+      - ${MEDIAHOME_DRIVE:-/mnt/external-drive}:/data
+    ports:
+      - 7878:7878
+    restart: unless-stopped
+
+  bazarr:
+    image: lscr.io/linuxserver/bazarr:latest
+    container_name: bazarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+    volumes:
+      - ./config/bazarr:/config
+      - ${MEDIAHOME_DRIVE:-/mnt/external-drive}:/data
+    ports:
+      - 6767:6767
+    restart: unless-stopped
+
+  # ==========================================
+  # OBSERVABILITY & MANAGEMENT
+  # ==========================================
+  dozzle:
+    image: amir20/dozzle:latest
+    container_name: dozzle
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    ports:
+      - 9999:8080
+    restart: unless-stopped
+
+  beszel:
+    image: henrygd/beszel:latest
+    container_name: beszel
+    volumes:
+      - ./config/beszel:/beszel_data
+    ports:
+      - 8090:8090
+    restart: unless-stopped
