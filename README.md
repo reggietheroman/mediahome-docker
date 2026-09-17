@@ -38,7 +38,7 @@ Host storage paths are set with a `.env` file in this directory. Compose loads i
    cp .env.example .env
    ```
 
-2. Edit `.env` for your mount points:
+2. Edit `.env` for your mount points and, if needed, host ports:
 
    | Variable | Used by | Container path |
    |----------|---------|----------------|
@@ -46,15 +46,28 @@ Host storage paths are set with a `.env` file in this directory. Compose loads i
    | `MEDIAHOME_DRIVE_DOWNLOADS` | qBittorrent | `/downloads` |
    | `MEDIAHOME_DRIVE_MEDIA` | Jellyfin | `/data/media` |
 
+   | Variable | Service | Default host port |
+   |----------|---------|-------------------|
+   | `QBITTORRENT_PORT` | qBittorrent Web UI | 8080 |
+   | `QBITTORRENT_BT_PORT` | qBittorrent (TCP/UDP) | 6881 |
+   | `JELLYFIN_PORT` | Jellyfin | 8096 |
+   | `SONARR_PORT` | Sonarr | 8989 |
+   | `RADARR_PORT` | Radarr | 7878 |
+   | `BAZARR_PORT` | Bazarr | 6767 |
+   | `SEERR_PORT` | Seerr | 5055 |
+   | `DOZZLE_PORT` | Dozzle | 9999 |
+   | `BESZEL_PORT` | Beszel | 8090 |
+
    Example:
 
    ```dotenv
    MEDIAHOME_DRIVE=/mnt/external-drive
    MEDIAHOME_DRIVE_DOWNLOADS=/mnt/external-drive/downloads
    MEDIAHOME_DRIVE_MEDIA=/mnt/external-drive/media
+   JELLYFIN_PORT=18096
    ```
 
-   If `.env` is missing, compose falls back to the paths above via `${VAR:-default}` syntax in `docker-compose.yml`.
+   If `.env` is missing, compose falls back to the defaults above via `${VAR:-default}` syntax in `docker-compose.yml`. Container ports stay fixed; services on the Compose network still use Docker hostnames and those internal ports (for example `http://jellyfin:8096` in the Seerr wizard), regardless of what you set on the host.
 
 3. Optional: use a different env file:
 
@@ -67,7 +80,7 @@ Inside each app’s web UI, point paths at the **container** paths (e.g. qBittor
 ## Run
 
 ```bash
-docker compose config   # verify resolved volume paths
+docker compose config   # verify resolved volume paths and host ports
 docker compose up -d
 docker compose logs -f  # optional
 ```
@@ -76,7 +89,7 @@ Application config persists under `./config/<service>/` (created on first run).
 
 ### First-time Seerr
 
-After the stack is up, open http://localhost:5055 and complete the setup wizard:
+After the stack is up, open Seerr at the host URL from the table above (default http://localhost:5055) and complete the setup wizard:
 
 1. Connect **Jellyfin** at `http://jellyfin:8096` (admin account; use an API key from the Jellyfin dashboard if prompted).
 2. Add **Sonarr** at `http://sonarr:8989` and **Radarr** at `http://radarr:7878`, each with the API key from Settings → General in that app.

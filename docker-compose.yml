@@ -14,9 +14,9 @@ services:
       - ./config/qbittorrent:/config
       - ${MEDIAHOME_DRIVE_DOWNLOADS:-/mnt/external-drive/downloads}:/downloads
     ports:
-      - 8080:8080
-      - 6881:6881
-      - 6881:6881/udp
+      - "${QBITTORRENT_PORT:-8080}:8080"
+      - "${QBITTORRENT_BT_PORT:-6881}:6881"
+      - "${QBITTORRENT_BT_PORT:-6881}:6881/udp"
     restart: unless-stopped
 
   # ==========================================
@@ -33,7 +33,7 @@ services:
       - ./config/jellyfin:/config
       - ${MEDIAHOME_DRIVE_MEDIA:-/mnt/external-drive/media}:/data/media
     ports:
-      - 8096:8096
+      - "${JELLYFIN_PORT:-8096}:8096"
     restart: unless-stopped
 
   # ==========================================
@@ -50,7 +50,7 @@ services:
       - ./config/sonarr:/config
       - ${MEDIAHOME_DRIVE:-/mnt/external-drive}:/data
     ports:
-      - 8989:8989
+      - "${SONARR_PORT:-8989}:8989"
     restart: unless-stopped
 
   radarr:
@@ -64,7 +64,7 @@ services:
       - ./config/radarr:/config
       - ${MEDIAHOME_DRIVE:-/mnt/external-drive}:/data
     ports:
-      - 7878:7878
+      - "${RADARR_PORT:-7878}:7878"
     restart: unless-stopped
 
   bazarr:
@@ -78,7 +78,7 @@ services:
       - ./config/bazarr:/config
       - ${MEDIAHOME_DRIVE:-/mnt/external-drive}:/data
     ports:
-      - 6767:6767
+      - "${BAZARR_PORT:-6767}:6767"
     restart: unless-stopped
 
   # ==========================================
@@ -98,7 +98,7 @@ services:
     volumes:
       - ./config/seerr:/app/config
     ports:
-      - 5055:5055
+      - "${SEERR_PORT:-5055}:5055"
     healthcheck:
       test: wget --no-verbose --tries=1 --spider http://localhost:5055/api/v1/settings/public || exit 1
       start_period: 20s
@@ -116,7 +116,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     ports:
-      - 9999:8080
+      - "${DOZZLE_PORT:-9999}:8080"
     restart: unless-stopped
 
   beszel:
@@ -125,5 +125,5 @@ services:
     volumes:
       - ./config/beszel:/beszel_data
     ports:
-      - 8090:8090
+      - "${BESZEL_PORT:-8090}:8090"
     restart: unless-stopped
