@@ -81,6 +81,29 @@ services:
       - "${BAZARR_PORT:-6767}:6767"
     restart: unless-stopped
 
+  flaresolverr:
+    image: ghcr.io/flaresolverr/flaresolverr:latest
+    container_name: flaresolverr
+    environment:
+      - LOG_LEVEL=info
+      - TZ=Etc/UTC
+    restart: unless-stopped
+
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:latest
+    container_name: prowlarr
+    depends_on:
+      - flaresolverr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+    volumes:
+      - ./config/prowlarr:/config
+    ports:
+      - "${PROWLARR_PORT:-9696}:9696"
+    restart: unless-stopped
+
   # ==========================================
   # REQUEST MANAGEMENT
   # ==========================================
@@ -113,8 +136,11 @@ services:
   dozzle:
     image: amir20/dozzle:latest
     container_name: dozzle
+    environment:
+      - DOZZLE_AUTH_PROVIDER=simple
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./config/dozzle:/data
     ports:
       - "${DOZZLE_PORT:-9999}:8080"
     restart: unless-stopped
